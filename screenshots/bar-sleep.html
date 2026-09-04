@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>bar sleep</title>
+<style>
+  html, body { margin: 0; background: #0b0d12; }
+  .desk { padding: 48px 40px 56px; }
+  .label { color: #565f89; font: 12px/1.4 ui-sans-serif, system-ui; margin: 0 0 12px 4px; }
+  .bar {
+    height: 40px;
+    background: #1a1b26;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    font: 13px "JetBrains Mono", ui-monospace, monospace;
+    color: #c0caf5;
+    border: 1px solid #292e42;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.4);
+  }
+  .left, .right { display: flex; align-items: center; gap: 14px; }
+  .ws { color: #7aa2f7; }
+  .muted { color: #565f89; }
+  .face { width: 16px; height: 16px; position: relative; }
+  .blob {
+    width: 15px; height: 15px; border-radius: 50%;
+    background: #565f89;
+    margin: 0.5px auto 0;
+  }
+  .eyes {
+    position: absolute; left: 0; right: 0; top: 7px;
+    display: flex; justify-content: center; gap: 3px;
+  }
+  .eye { width: 3px; height: 1px; border-radius: 1px; background: #1a1b26; }
+</style>
+</head>
+<body>
+  <div class="desk">
+    <p class="label">Idle — muted, asleep</p>
+    <div class="bar">
+      <div class="left">
+        <span>⬡</span>
+        <span class="ws">1</span>
+        <span class="muted">2  3</span>
+      </div>
+      <div class="right">
+        <div class="face">
+          <div class="blob"></div>
+          <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+        </div>
+        <span class="muted">♪</span>
+        <span>Tue 09:41</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "pixbroker.grokbot",
+  "name": "Grok Bot TUI",
+  "version": "0.4.0",
+  "author": "pixbroker",
+  "license": "MIT",
+  "description": "Unofficial Omarchy bar widget for the native Rust Grok Bot TUI. Reads a pushed inbox snapshot. Click a row to open that bot in the Rust TUI. Does not launch the Electron app.",
+  "kinds": ["bar-widget"],
+  "activation": "on-demand",
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Grok Bot TUI",
+    "description": "Inbox of latest bot messages. Click a row to open that bot in the Rust TUI.",
+    "category": "AI",
+    "aliases": ["grokbot-tui", "grok-bot-tui"],
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "command": "grokbot-tui",
+      "appId": "org.omarchy.grokbot-tui"
+    },
+    "schema": [
+      {
+        "key": "command",
+        "type": "string",
+        "label": "Rust TUI command",
+        "description": "Must be grokbot-tui or an absolute path ending in /grokbot-tui. Never Electron /usr/bin/grokbot. Do not put tokens here.",
+        "defaultValue": "grokbot-tui"
+      },
+      {
+        "key": "appId",
+        "type": "string",
+        "label": "Terminal app id",
+        "description": "Omarchy TUI window id used when opening a bot from the panel.",
+        "defaultValue": "org.omarchy.grokbot-tui"
+      }
+    ]
+  }
+}

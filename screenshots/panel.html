@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>inbox mock</title>
+<style>
+  html, body { margin: 0; background: #0b0d12; }
+  .wrap { padding: 28px; display: flex; justify-content: center; }
+  .panel {
+    width: 380px;
+    background: #1a1b26;
+    border: 1px solid #3b4261;
+    border-radius: 8px;
+    font: 13px "JetBrains Mono", ui-monospace, monospace;
+    color: #c0caf5;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,.45);
+  }
+  .head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 14px; font-weight: 700;
+  }
+  .muted { color: #565f89; font-weight: 400; font-size: 12px; }
+  .line { height: 1px; background: #292e42; }
+  .row {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    gap: 10px;
+    padding: 10px 14px;
+    align-items: center;
+    min-height: 56px;
+  }
+  .row:hover { background: #24283b; }
+  .av { width: 22px; height: 22px; border-radius: 50%; background: #c0caf5; position: relative; }
+  .av.dim { background: #565f89; }
+  .eye { position: absolute; width: 3px; height: 4px; border-radius: 50%; background: #1a1b26; top: 8px; }
+  .eye.l { left: 5px; } .eye.r { right: 5px; }
+  .name { font-weight: 700; }
+  .prev { color: #565f89; font-size: 12px; margin-top: 2px; }
+  .when { color: #565f89; font-size: 12px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <div class="head"><span>Bots · 1 unread</span><span class="muted">reload</span></div>
+      <div class="line"></div>
+      <div class="row">
+        <div class="av"><div class="eye l"></div><div class="eye r"></div></div>
+        <div>
+          <div class="name">Ada</div>
+          <div class="prev">Thinking</div>
+        </div>
+        <div class="when">now</div>
+      </div>
+      <div class="row">
+        <div class="av dim"><div class="eye l"></div><div class="eye r"></div></div>
+        <div>
+          <div>Scout</div>
+          <div class="prev">sample lookup finished</div>
+        </div>
+        <div class="when">2h</div>
+      </div>
+      <div class="row">
+        <div class="av dim"><div class="eye l"></div><div class="eye r"></div></div>
+        <div>
+          <div>Notes</div>
+          <div class="prev">No messages yet</div>
+        </div>
+        <div class="when">1d</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

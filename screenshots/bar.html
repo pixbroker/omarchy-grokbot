@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>bar mock</title>
+<style>
+  html, body { margin: 0; background: #0f1117; }
+  .bar {
+    height: 40px;
+    background: #1a1b26;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    font: 13px "JetBrains Mono", ui-monospace, monospace;
+    color: #c0caf5;
+    border-bottom: 1px solid #292e42;
+  }
+  .left, .right { display: flex; align-items: center; gap: 14px; }
+  .om { font-family: sans-serif; font-size: 16px; opacity: .9; }
+  .ws { color: #7aa2f7; }
+  .muted { color: #565f89; }
+  .face {
+    width: 22px; height: 22px; position: relative;
+  }
+  .blob {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #7aa2f7;
+  }
+  .eye {
+    position: absolute; width: 4px; height: 6px; border-radius: 50%;
+    background: #1a1b26; top: 7px;
+  }
+  .eye.l { left: 5px; }
+  .eye.r { right: 5px; }
+  .clock { color: #c0caf5; }
+</style>
+</head>
+<body>
+  <div class="bar">
+    <div class="left">
+      <span class="om">⬡</span>
+      <span class="ws">1</span>
+      <span class="muted">2  3</span>
+    </div>
+    <div class="right">
+      <div class="face" title="Grok Bot TUI">
+        <div class="blob"></div>
+        <div class="eye l"></div>
+        <div class="eye r"></div>
+      </div>
+      <span class="muted">♪</span>
+      <span class="clock">Tue 09:41</span>
+    </div>
+  </div>
+</body>
+</html>

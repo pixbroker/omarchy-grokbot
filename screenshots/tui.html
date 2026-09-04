@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>tui mock</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #1a1b26; }
+  * { box-sizing: border-box; }
+  body {
+    display: flex; flex-direction: column;
+    font: 13px/1.35 "JetBrains Mono", ui-monospace, Menlo, monospace;
+    color: #c0caf5;
+    height: 100vh;
+  }
+  .app { display: flex; flex: 1; min-height: 0; }
+  .side {
+    width: 280px;
+    border-right: 1px solid #3b4261;
+    padding: 8px 0 8px 8px;
+    display: flex; flex-direction: column;
+  }
+  .box {
+    border: 1px solid #3b4261;
+    flex: 1;
+    padding: 6px 0;
+    overflow: hidden;
+  }
+  .title { color: #7aa2f7; padding: 0 10px 6px; }
+  .sec { color: #565f89; padding: 4px 10px; font-size: 12px; }
+  .row {
+    display: grid;
+    grid-template-columns: 8px 28px 1fr;
+    gap: 4px;
+    padding: 4px 8px 4px 4px;
+    min-height: 40px;
+    align-items: center;
+  }
+  .row.sel {
+    background: #2a3658;
+  }
+  .rail { width: 4px; height: 32px; background: #7aa2f7; border-radius: 1px; }
+  .row:not(.sel) .rail { background: transparent; }
+  .av {
+    width: 22px; height: 22px; border-radius: 50%; position: relative;
+  }
+  .av.cyan { background: #449dab; }
+  .av.mag { background: #ad8ee6; }
+  .av.yel { background: #e0af68; }
+  .av.grn { background: #9ece6a; }
+  .eye { position: absolute; width: 3px; height: 5px; border-radius: 50%; background: #1a1b26; top: 7px; }
+  .eye.l { left: 5px; } .eye.r { right: 5px; }
+  .name { color: #c0caf5; }
+  .row.sel .name { color: #7aa2f7; font-weight: 700; }
+  .sub { color: #565f89; font-size: 12px; }
+  .meta { color: #565f89; float: right; font-size: 12px; }
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .head {
+    border-bottom: 1px solid #3b4261;
+    padding: 8px 12px;
+    display: flex; align-items: center; gap: 10px;
+    min-height: 48px;
+  }
+  .head .nm { color: #7aa2f7; font-weight: 700; }
+  .head .desc { color: #565f89; }
+  .chat { flex: 1; padding: 16px 18px; }
+  .who { color: #9ece6a; margin-bottom: 4px; }
+  .who.you { color: #7aa2f7; }
+  .msg { color: #c0caf5; margin: 0 0 14px 8px; max-width: 52ch; }
+  .live { display: flex; align-items: center; gap: 10px; padding: 8px 18px 4px; }
+  .live .av { width: 28px; height: 28px; }
+  .live .av .eye { top: 9px; width: 4px; height: 6px; }
+  .live span { color: #e0af68; }
+  .comp {
+    margin: 8px 10px 10px;
+    border: 1px solid #7aa2f7;
+    padding: 8px 10px;
+    min-height: 52px;
+    color: #565f89;
+  }
+  .status {
+    height: 22px;
+    border-top: 1px solid #292e42;
+    color: #565f89;
+    padding: 0 10px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px;
+  }
+  .dot { color: #9ece6a; }
+</style>
+</head>
+<body>
+  <div class="app">
+    <div class="side">
+      <div class="box">
+        <div class="title"> Bots (4) </div>
+        <div class="sec"> ▾ Pinned</div>
+        <div class="row sel">
+          <div class="rail"></div>
+          <div class="av cyan"><div class="eye l"></div><div class="eye r"></div></div>
+          <div>
+            <div><span class="name">Ada</span><span class="meta">2h</span></div>
+            <div class="sub">Say hello to get started.</div>
+          </div>
+        </div>
+        <div class="sec"> ▾ Demo</div>
+        <div class="row">
+          <div class="rail"></div>
+          <div class="av mag"><div class="eye l"></div><div class="eye r"></div></div>
+          <div>
+            <div><span class="name">Scout</span><span class="meta">5h</span></div>
+            <div class="sub">idle</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="rail"></div>
+          <div class="av yel"><div class="eye l"></div><div class="eye r"></div></div>
+          <div>
+            <div><span class="name">Notes</span><span class="meta">1d</span></div>
+            <div class="sub">waiting for you</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="rail"></div>
+          <div class="av grn"><div class="eye l"></div><div class="eye r"></div></div>
+          <div>
+            <div><span class="name">Research</span><span class="meta">3d</span></div>
+            <div class="sub"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="main">
+      <div class="head">
+        <div class="av cyan"><div class="eye l"></div><div class="eye r"></div></div>
+        <div>
+          <div class="nm">Ada</div>
+          <div class="desc">sample bot · demo conversation</div>
+        </div>
+      </div>
+      <div class="chat">
+        <div class="who you">you</div>
+        <div class="msg">Hello — this is a sample screenshot with fictional bots.</div>
+        <div class="who">Ada</div>
+        <div class="msg">Hi. I can help with drafts, lookups, and small tasks.</div>
+      </div>
+      <div class="live">
+        <div class="av cyan"><div class="eye l"></div><div class="eye r"></div></div>
+        <span>Thinking ···</span>
+      </div>
+      <div class="comp">Message Ada</div>
+    </div>
+  </div>
+  <div class="status">
+    <span><span class="dot">●</span> connected</span>
+    <span>j/k move · [ hide · click select · ? help</span>
+  </div>
+</body>
+</html>
