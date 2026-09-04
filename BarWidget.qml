@@ -90,6 +90,9 @@ Panel {
   property int cursor: 0
   property double nowMs: Date.now()
   property int lastBarButton: Qt.LeftButton
+  // Wanted-ness by id, not by delegate: attention order moves a bot across
+  // the rule when it is answered, which creates a new row Avatar.
+  property var wantedIds: ({})
 
   readonly property var counts: snap && snap.counts ? snap.counts : ({})
   readonly property var bots: snap && snap.bots ? snap.bots : []
@@ -165,7 +168,44 @@ Panel {
     demoStart = Date.now()
     demoMode = !demoMode
     cursor = 0
+    var list = demoMode ? (demoSnap && demoSnap.bots) : (liveSnap && liveSnap.bots)
+    syncWantedIds(list || [], false)
     if (opened) requestGreeting(false)
+  }
+
+  function botWanted(b) {
+    return !!(b && (b.awaiting || b.unreadCount > 0))
+  }
+
+  function syncWantedIds(list, bow) {
+    var next = ({})
+    var bows = []
+    if (!list || list.length === undefined) list = []
+    for (var i = 0; i < list.length; i++) {
+      var b = list[i]
+      if (!b || !b.id) continue
+      if (botWanted(b))
+        next[b.id] = true
+      else if (bow && wantedIds[b.id])
+        bows.push(b.id)
+    }
+    wantedIds = next
+    if (bows.length) {
+      bowTimer.pending = bows
+      bowTimer.restart()
+    }
+  }
+
+  function celebrateIds(ids) {
+    if (!ids || !ids.length) return
+    var want = ({})
+    for (var j = 0; j < ids.length; j++) want[ids[j]] = true
+    for (var i = 0; i < rows.length; i++) {
+      var row = rows[i]
+      if (row.kind !== "bot" || !row.bot || !want[row.bot.id]) continue
+      var item = repeater.itemAt(i)
+      if (item && item.bow) item.bow()
+    }
   }
 
   readonly property var wanting: {
@@ -212,7 +252,8 @@ Panel {
   readonly property var rows: {
     var out = []
     if (!snap) return out
-    if (ordering === "attention") {
+    // Schema 1 has no sections/awaiting contract: one recency list, no rule.
+    if (schema >= 2 && ordering === "attention") {
       var wants = [], rest = []
       for (var b = 0; b < bots.length; b++) {
         var bot = bots[b]
@@ -225,7 +266,7 @@ Panel {
       for (var r2 = 0; r2 < rest.length; r2++) out.push({ kind: "bot", bot: rest[r2] })
       return out
     }
-    if (ordering === "channels" && sections.length > 0 && groupBySection) {
+    if (schema >= 2 && ordering === "channels" && sections.length > 0 && groupBySection) {
       var byId = ({})
       for (var i = 0; i < bots.length; i++) byId[bots[i].id] = bots[i]
       var seen = ({})
@@ -281,6 +322,18 @@ Panel {
 
   Timer { interval: 15000; running: true; repeat: true; onTriggered: root.nowMs = Date.now() }
 
+  // Repeater rebuilds after liveSnap replace; wait a tick so itemAt sees the
+  // new row (attention order moves the bot across the rule).
+  Timer {
+    id: bowTimer
+    interval: 1
+    property var pending: []
+    onTriggered: {
+      root.celebrateIds(pending)
+      pending = []
+    }
+  }
+
   onOpenedChanged: if (opened) {
     nowMs = Date.now()
     cursor = 0
@@ -306,7 +359,10 @@ Panel {
   }
 
   property var flourishDeck: []
-  property int flourishCount: 6
+  // Panel rows are 28px: deal only the four bold flourishes into playBold
+  // (hop, pop, wiggle, celebrate). Nod/look-around are the extra two on
+  // Avatar.flourishCount and do not get a card.
+  property int flourishCount: 4
   property int lastFlourish: -1
   function dealFlourishes() {
     var deck = []
@@ -537,9 +593,15 @@ Panel {
       var unreadCount = asCount(b.unreadCount !== undefined ? b.unreadCount : b.unread_count, 999)
       if (unreadCount === 0 && b.unread === true)
         unreadCount = 1
-      var shape = root.allowShape(b.shape)
-      if (shape === "")
-        shape = b.group === true ? "group" : (schema2 ? "squircle" : "circle")
+      var grouped = b.group === true || b.is_group === true
+      var shape
+      if (schema2) {
+        shape = root.allowShape(b.shape)
+        if (shape === "")
+          shape = grouped ? "group" : "squircle"
+      } else {
+        shape = grouped ? "group" : "circle"
+      }
       var busy = b.busy === true || b.working === true
       out.push({
         id: id,
@@ -555,9 +617,9 @@ Panel {
         updatedAtMs: root.asMs(b.updatedAt !== undefined ? b.updatedAt : b.last_activity_ts),
         when: root.clip(b.when, 16),
         color: root.clip(b.color, 24),
-        hex: root.allowHex(b.hex),
+        hex: schema2 ? root.allowHex(b.hex) : "",
         shape: shape,
-        avatar: root.allowAvatarPath(b.avatar),
+        avatar: schema2 ? root.allowAvatarPath(b.avatar) : "",
         group: b.group === true || b.is_group === true,
         members: asCount(b.members, 999),
         muted: b.muted === true,
@@ -645,6 +707,7 @@ Panel {
     if (String(text || "").length > root.maxInboxBytes) {
       root.liveSnap = null
       root.lastError = "inbox snapshot too large"
+      if (!root.demoMode) root.syncWantedIds([], false)
       return
     }
     try {
@@ -652,6 +715,7 @@ Panel {
       if (!data || data.ok !== true || data.client !== "grokbot-tui") {
         root.liveSnap = null
         root.lastError = "Not a grokbot-tui inbox snapshot"
+        if (!root.demoMode) root.syncWantedIds([], false)
         return
       }
       var schema = Math.floor(Number(data.schema) || 1)
@@ -669,9 +733,11 @@ Panel {
         sections: schema2 ? root.sanitizeSections(data.sections) : [],
         bots: bots
       }
+      if (!root.demoMode) root.syncWantedIds(bots, true)
     } catch (e) {
       root.liveSnap = null
       root.lastError = "Could not read inbox"
+      if (!root.demoMode) root.syncWantedIds([], false)
     }
   }
 
@@ -685,6 +751,7 @@ Panel {
     onLoadFailed: {
       root.liveSnap = null
       root.lastError = ""
+      if (!root.demoMode) root.syncWantedIds([], false)
     }
   }
 
@@ -1072,6 +1139,10 @@ Panel {
                 onTriggered: if (rowAvatar) rowAvatar.playBold(root.nextFlourish())
               }
 
+              function bow() {
+                if (rowAvatar) rowAvatar.celebrate()
+              }
+
               Text {
                 visible: modelData.kind === "section"
                 anchors.left: parent.left
@@ -1110,20 +1181,13 @@ Panel {
                     fill: modelData.kind === "bot" ? root.colorFor(modelData.bot) : root.dim
                     eyeColor: root.eyeInk
                     face: modelData.kind === "bot" ? root.faceFor(modelData.bot) : "neutral"
-                    Component.onCompleted: root.flourishCount = flourishCount
+                    Component.onCompleted: root.flourishCount = boldFlourishes.length
 
                     readonly property point look: mapFromItem(keyCatcher,
                       keyCatcher.pointerX, keyCatcher.pointerY)
                     looking: keyCatcher.pointerX >= 0
                     followX: look.x
                     followY: look.y
-
-                    property bool wasWanted: false
-                    onFaceChanged: {
-                      var wants = face === "attentive" || face === "excited" || face === "curious"
-                      if (wants) wasWanted = true
-                      else if (wasWanted) { wasWanted = false; celebrate() }
-                    }
                   }
 
                   Column {
