@@ -34,7 +34,7 @@ Item {
 
   property string shape: "squircle"
   property color fill: "#777777"
-  // App-bundle colours. Prefer a bot's hex from the snapshot when present.
+  // App-bundle colours; callers should prefer a bot's snapshot hex when present.
   readonly property var palette: ({
     "red": "#FF263C", "orange": "#FF6700", "yellow": "#FF9800", "green": "#00C972",
     "cyan": "#00BCA6", "blue": "#1084FE", "violet": "#9159FE", "magenta": "#FF309B",

@@ -1,7 +1,7 @@
 import QtQuick
 import qs.Commons
 
-// Bar mark: outlined squircle with cut-out eyes. Theme fill only.
+// Theme-only mark so BarWidget’s Face API still compiles.
 Item {
   id: root
   property real iconSize: Style.bar.iconCanvas
@@ -13,12 +13,14 @@ Item {
   width: iconSize
   height: iconSize
 
+  readonly property color markColor: lively ? Color.foreground : Color.muted
+
   Avatar {
     anchors.fill: parent
     shape: "squircle"
     outlined: true
-    cutoutEyes: true
-    fill: root.lively ? Color.foreground : Color.muted
+    fill: root.markColor
+    eyeColor: root.markColor
     face: root.lively ? "neutral" : "drowsy"
     animate: root.lively
   }
