@@ -9,9 +9,9 @@
 
 Unofficial community bar widget for the **native Rust Grok Bot TUI** (`grokbot-tui`).
 
-Click the face for an inbox of latest bot messages. Click a row to open that bot in the Rust TUI. The face sleeps in muted grey when idle and animates in foreground when something is unread or working.
+The Grok Bot mark is always in the bar. Beside it are the bots waiting on you, drawn as themselves. Click the mark for the roster; click a row to open that bot in the Rust TUI. The mark dims when the snapshot writer is gone (app not running, or the file is older than two minutes).
 
-**Omarchy theme.** The widget uses the shell palette (`Color.muted`, `Color.foreground`, `Color.bar.background`) so it restyles when you `omarchy theme set`. The TUI reads the same current theme file (`~/.local/state/omarchy/current/theme/colors.toml`) and reloads live (file watch + SIGUSR2).
+**Omarchy theme.** The widget uses the shell palette so it restyles when you `omarchy theme set`. The TUI reads the same current theme file (`~/.local/state/omarchy/current/theme/colors.toml`) and reloads live (file watch + SIGUSR2).
 
 This plugin is **not** Grok Bot, and it is **not** an xAI or Cursor product. It is also not the Electron Linux desktop client (`/usr/bin/grokbot`).
 
@@ -39,7 +39,7 @@ Demo frames only. Fictional bots (`Ada`, `Scout`, `Notes`, `Research`) — not a
 
 ## Privacy
 
-The widget does not read tokens, chats, emails, or usage APIs. It does **not** poll or exec `grokbot-tui inbox`. It watches `~/.local/state/grok-bot-rust/inbox.json` (names and last-message previews only), written by the TUI or `grokbot-tui inbox --watch`. Files larger than 64KiB are rejected. Opening a bot uses a Quickshell `Process` **argv** (`omarchy-launch-or-focus-tui`, `--app-id=…`, `grokbot-tui`, `open`, `<id>`). Bot ids are allowlisted (`[A-Za-z0-9._:-]`, max 80). Launch has an 8s timeout. At most 24 bots; string fields clipped. CLI-derived `Text` uses `textFormat: Text.PlainText`. Never `/usr/bin/grokbot`.
+The widget does not read tokens, chats, emails, or usage APIs. It does **not** poll or exec `grokbot-tui inbox`. It watches `~/.local/state/grok-bot-rust/inbox.json` (names, titles, last-message previews, shapes and colours only), written by the TUI or `grokbot-tui inbox --local --watch`. Files larger than 64KiB are rejected. Opening a bot uses a Quickshell `Process` **argv** (`omarchy-launch-or-focus-tui`, `--app-id=…`, `grokbot-tui`, `open`, `<id>`). Bot ids are allowlisted (`[A-Za-z0-9._:-]`, max 80). Avatar pictures, if present, must be an absolute path under `$HOME` ending in `.png`/`.jpg`/`.jpeg`/`.webp`. Launch has an 8s timeout. At most 24 bots; string fields clipped. CLI-derived `Text` uses `textFormat: Text.PlainText`. Never `/usr/bin/grokbot`. Schema 1 snapshots still work (circle avatars, flat order).
 
 ## What you need
 
@@ -67,7 +67,7 @@ cp contrib/systemd/grokbot-inbox.service ~/.config/systemd/user/
 systemctl --user enable --now grokbot-inbox.service
 ```
 
-That process stays on the gateway event stream and rewrites the snapshot. The TUI writes the same file while it is open.
+Prefer `grokbot-tui inbox --local --watch` (or the systemd unit from the TUI tree): it rewrites the snapshot from local state and needs no session. The TUI writes the same file while it is open.
 
 Verify:
 
@@ -92,17 +92,64 @@ omarchy plugin remove pixbroker.grokbot
 
 ## Use
 
-- Click the face: inbox of latest bot messages
-- Click a row: open that bot in **`grokbot-tui`**
-- Idle face is muted and asleep; unread or working animates in `Color.foreground`
-- Follows the Omarchy theme (same `colors.toml` as the TUI)
+### Bar
+
+The mark is always there. Beside it, by default, are up to three bots that want you (waiting, working, then unread), newest first.
+
+| | |
+| --- | --- |
+| click | open the panel |
+| right-click | open **`grokbot-tui`** (no bot id) |
+| middle-click | cycle what sits beside the mark: avatars · count · none |
+| hover | tooltip with counts; the bar avatars look up one after another |
+
+### Panel
+
+Bots waiting on you come first (longest wait at the top), then a rule, then everyone else by recency. Avatars greet when the panel opens; their eyes follow the pointer over the list.
+
+| key | |
+| --- | --- |
+| `j` `k` | move |
+| `Enter` | open that bot in **`grokbot-tui`** |
+| `g` | cycle the order: attention · channels · flat |
+| `h` | redact names and messages (for screen sharing; ids are never redacted) |
+| `r` | cycle what sits beside the mark |
+| `Esc` | close |
+
+### Faces
+
+| | |
+| --- | --- |
+| eyes up, leaning in | waiting on your answer |
+| wide-eyed | more than one unread message |
+| head tilted | one unread message |
+| half-closed | nothing for a week |
+| level | up to date |
+
+A bot that is working says `thinking…` in place of its last line. A row that goes from wanted to not-wanted takes a bow.
+
+### Demo
+
+`omarchy-shell pixbroker.grokbot demo` swaps in a staged roster (fourteen invented bots across ACME and Personal) so screenshots need no writer. Call it again for the live snapshot.
 
 ## Settings
+
+Set on the bar entry, or with the keys above:
 
 | Key | Default | What it does |
 | --- | --- | --- |
 | command | grokbot-tui | Basename `grokbot-tui` or an absolute path ending in `/grokbot-tui` |
 | appId | org.omarchy.grokbot-tui | Window id used to focus an existing TUI |
+| barMetric | avatars | What sits beside the mark: `avatars` · `count` · `none` |
+| ordering | attention | Panel order: `attention` · `channels` · `flat` |
+| groupBySection | true | When ordering is channels, group by snapshot sections |
+| maxBarAvatars | 3 | Most avatars to show in the bar (1–6) |
+
+```bash
+omarchy bar set pixbroker.grokbot barMetric count
+omarchy bar set pixbroker.grokbot ordering channels
+omarchy bar set pixbroker.grokbot maxBarAvatars 4
+```
 
 ## Validate
 

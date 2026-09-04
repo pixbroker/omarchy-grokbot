@@ -7,21 +7,23 @@ Item {
   property real iconSize: Style.bar.iconCanvas
   property bool lively: false
   property color holeColor: Color.bar.background
+  property color fill: lively ? Color.foreground : Color.muted
+  property real markOpacity: 1
 
   implicitWidth: iconSize
   implicitHeight: iconSize
   width: iconSize
   height: iconSize
 
-  readonly property color markColor: lively ? Color.foreground : Color.muted
-
   Avatar {
     anchors.fill: parent
     shape: "squircle"
     outlined: true
-    fill: root.markColor
-    eyeColor: root.markColor
+    fill: root.fill
+    eyeColor: root.fill
     face: root.lively ? "neutral" : "drowsy"
     animate: root.lively
+    opacity: root.markOpacity
+    Behavior on opacity { NumberAnimation { duration: 220 } }
   }
 }

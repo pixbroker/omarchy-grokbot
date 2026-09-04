@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "pixbroker.grokbot",
   "name": "Grok Bot TUI",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "author": "pixbroker",
   "license": "MIT",
   "description": "Unofficial Omarchy bar widget for the native Rust Grok Bot TUI. Reads a pushed inbox snapshot. Click a row to open that bot in the Rust TUI. Does not launch the Electron app.",
@@ -20,7 +20,11 @@
     "defaultSection": "right",
     "defaults": {
       "command": "grokbot-tui",
-      "appId": "org.omarchy.grokbot-tui"
+      "appId": "org.omarchy.grokbot-tui",
+      "barMetric": "avatars",
+      "ordering": "attention",
+      "groupBySection": "true",
+      "maxBarAvatars": 3
     },
     "schema": [
       {
@@ -36,6 +40,46 @@
         "label": "Terminal app id",
         "description": "Omarchy TUI window id used when opening a bot from the panel.",
         "defaultValue": "org.omarchy.grokbot-tui"
+      },
+      {
+        "key": "barMetric",
+        "type": "enum",
+        "label": "What sits beside the logo",
+        "options": [
+          "avatars",
+          "count",
+          "none"
+        ],
+        "defaultValue": "avatars",
+        "description": "The Grok Bot mark is always shown. To its right: avatars = the bots waiting on you, as themselves; count = how many are waiting; none = the mark alone."
+      },
+      {
+        "key": "ordering",
+        "type": "enum",
+        "label": "Panel order",
+        "options": [
+          "attention",
+          "channels",
+          "flat"
+        ],
+        "defaultValue": "attention",
+        "description": "attention = bots waiting on you first, longest wait at the top, then a rule and everyone else by recency; channels = the sections from the snapshot; flat = purely by last message."
+      },
+      {
+        "key": "groupBySection",
+        "type": "boolean",
+        "label": "Group the panel by channel",
+        "defaultValue": "true",
+        "description": "Use the channels (sidebar sections) from the inbox snapshot when ordering is channels."
+      },
+      {
+        "key": "maxBarAvatars",
+        "type": "integer",
+        "label": "Most avatars to show in the bar",
+        "min": 1,
+        "max": 6,
+        "step": 1,
+        "defaultValue": 3
       }
     ]
   }
