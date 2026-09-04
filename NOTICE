@@ -1,0 +1,12 @@
+This plugin includes software developed by Neil Patel (omabot),
+licensed under the Apache License, Version 2.0.
+See https://github.com/njpatel/omabot and LICENSE-APACHE.
+
+The remainder of this plugin is licensed under the MIT License. See LICENSE.
+
+Ported files:
+
+  Avatar.qml
+    Copyright 2026 Neil Patel / omabot
+    Apache License, Version 2.0
+    https://github.com/njpatel/omabot

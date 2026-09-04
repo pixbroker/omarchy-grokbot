@@ -15,6 +15,8 @@ Click the face for an inbox of latest bot messages. Click a row to open that bot
 
 This plugin is **not** Grok Bot, and it is **not** an xAI or Cursor product. It is also not the Electron Linux desktop client (`/usr/bin/grokbot`).
 
+Faces, flourishes, roster ordering and the local-state reader are adapted from [omabot](https://github.com/njpatel/omabot) by Neil Patel (Apache-2.0).
+
 ## Screenshots
 
 Demo frames only. Fictional bots (`Ada`, `Scout`, `Notes`, `Research`) — not a capture of anyone’s real list, chat, or account.
