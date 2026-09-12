@@ -1,0 +1,6 @@
+This plugin includes Avatar.qml adapted from omabot
+(https://github.com/njpatel/omabot) by Neil Patel, licensed under the
+Apache License, Version 2.0. See LICENSE-APACHE.
+
+Faces, flourishes, roster ordering and the redact function follow that
+source. The rest of this plugin remains MIT (see LICENSE).

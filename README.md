@@ -37,7 +37,11 @@ Demo frames only. Fictional bots (`Ada`, `Scout`, `Notes`, `Research`) — not a
 
 ## Privacy
 
-The widget does not read tokens, chats, emails, or usage APIs. It does **not** poll or exec `grokbot-tui inbox`. It watches `~/.local/state/grok-bot-rust/inbox.json` (names and last-message previews only), written by the TUI or `grokbot-tui inbox --watch`. Files larger than 64KiB are rejected. Opening a bot uses a Quickshell `Process` **argv** (`omarchy-launch-or-focus-tui`, `--app-id=…`, `grokbot-tui`, `open`, `<id>`). Bot ids are allowlisted (`[A-Za-z0-9._:-]`, max 80). Launch has an 8s timeout. At most 24 bots; string fields clipped. CLI-derived `Text` uses `textFormat: Text.PlainText`. Never `/usr/bin/grokbot`.
+The widget does not read tokens, chats, emails, or usage APIs. It does **not** poll or exec `grokbot-tui inbox`. It watches `~/.local/state/grok-bot-rust/inbox.json` (schema 2: names, previews, shapes, colours, sections). Prefer `grokbot-tui inbox --local --watch` (desktop app state, no login). Files larger than 64KiB are rejected. Opening a bot uses a Quickshell `Process` **argv** (`omarchy-launch-or-focus-tui`, `--app-id=…`, `grokbot-tui`, `open`, `<id>`). Bot ids are allowlisted (`[A-Za-z0-9._:-]`, max 80). Launch has an 8s timeout. At most 24 bots; string fields clipped. CLI-derived `Text` uses `textFormat: Text.PlainText`. Never `/usr/bin/grokbot`.
+
+> Faces, flourishes, roster ordering and the local-state reader are adapted
+> from [omabot](https://github.com/njpatel/omabot) by Neil Patel (Apache-2.0).
+> `Avatar.qml` is Apache-2.0; see `NOTICE` and `LICENSE-APACHE`.
 
 ## What you need
 
@@ -58,14 +62,13 @@ cargo install --git https://github.com/pixbroker/grok-bot-rust.git \
 That places `~/.cargo/bin/grokbot-tui`. The widget also accepts `~/.local/bin/grokbot-tui`. Then:
 
 ```bash
-grokbot-tui login
 mkdir -p ~/.config/systemd/user
 # from the grok-bot-rust tree:
 cp contrib/systemd/grokbot-inbox.service ~/.config/systemd/user/
 systemctl --user enable --now grokbot-inbox.service
 ```
 
-That process stays on the gateway event stream and rewrites the snapshot. The TUI writes the same file while it is open.
+That unit runs `grokbot-tui inbox --local --watch` (desktop app blobs, no login). The TUI writes the same file while it is open. `grokbot-tui inbox --watch` is the logged-in gateway writer.
 
 Verify:
 
@@ -90,15 +93,22 @@ omarchy plugin remove pixbroker.grokbot
 
 ## Use
 
-- Click the face: inbox of latest bot messages
-- Click a row: open that bot in **`grokbot-tui`**
-- Idle face is muted and asleep; unread or working animates in `Color.foreground`
+- Click the outlined mark: inbox panel
+- Beside the mark: up to three bots that want you (avatars), or a count, or nothing. Middle-click cycles.
+- Click a row: open that bot in **`grokbot-tui`**. Right-click the mark opens the TUI with no bot selected.
+- Hover the bar: those avatars look up, one after another
+- Panel keys: `j`/`k` move · `Enter` open · `g` order (attention / channels / flat) · `h` redact · `r` metric · `Esc` close
+- Demo roster for screenshots: `omarchy-shell pixbroker.grokbot demo` (same 14-bot table as `grokbot-tui demo`)
 - Follows the Omarchy theme (same `colors.toml` as the TUI)
 
 ## Settings
 
 | Key | Default | What it does |
 | --- | --- | --- |
+| barMetric | avatars | Beside the mark: `avatars`, `count`, or `none` |
+| ordering | attention | Panel order: `attention`, `channels`, or `flat` |
+| groupBySection | true | When ordering is channels, show sidebar section headers |
+| maxBarAvatars | 3 | How many wanting bots sit beside the mark (1–6) |
 | command | grokbot-tui | Basename `grokbot-tui` or an absolute path ending in `/grokbot-tui` |
 | appId | org.omarchy.grokbot-tui | Window id used to focus an existing TUI |
 
